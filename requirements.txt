@@ -8,3 +8,4 @@ Flask-RQ
 python-dotenv
 Redis
 beautifulsoup4
+gunicorn
