@@ -1,0 +1,10 @@
+aiohttp
+Flask
+Flask-Cors
+flask-crontab
+Flask-APScheduler
+Flask-Limiter
+Flask-RQ
+python-dotenv
+Redis
+beautifulsoup4
