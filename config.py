@@ -18,7 +18,7 @@ class Config(object):
 
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL"
-    ) or "sqlite:///" + os.path.join(basedir, "app.db")
+    ) or "sqlite+aiosqlite:///" + os.path.join(basedir, "app.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")

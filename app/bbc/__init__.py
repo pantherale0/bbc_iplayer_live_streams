@@ -1,16 +1,14 @@
-from flask import Blueprint
-
-bp = Blueprint("bbc", __name__)
-
-from app.bbc import routes
-
 import aiohttp
 import asyncio
 import logging
 import json
 import re
-
 from bs4 import BeautifulSoup
+from fastapi import APIRouter
+
+bp = APIRouter(prefix="/bbc", tags=["BBC iPlayer"])
+
+from app.bbc import routes
 
 from .const import BBC_IPLAYER_BASE, BBC_MEDIA_SELECTOR
 
@@ -38,7 +36,7 @@ def _parse_redux_script(soup: BeautifulSoup) -> dict | None:
         _LOGGER.warning("No Redux script found in BBC iPlayer page.")
     return None
 
-async def _reload_categories():
+async def reload_categories():
     """Async function to reload categories from the BBC iPlayer."""
     async with aiohttp.ClientSession() as session:
         response = await session.get(BBC_IPLAYER_BASE)
@@ -56,7 +54,7 @@ async def _reload_categories():
                         _CATEGORIES.append(subitem["id"])
             _LOGGER.info("Reloaded categories: %s", len(_CATEGORIES))
 
-async def _reload_programmes():
+async def reload_programmes():
     """Async function to reload programmes from the BBC iPlayer."""
     async with aiohttp.ClientSession() as session:
         coros = [
@@ -97,7 +95,7 @@ async def _reload_programmes():
                     _LOGGER.info("Added programme: %s", programme["title"])
                     _STREAMS.clear()
 
-async def _get_streams(vid: str, version="3.0") -> dict | None:
+async def get_streams(vid: str, version="3.0") -> dict | None:
     """Async function to get streams for a given video ID."""
     async with aiohttp.ClientSession() as session:
         response = await session.get(BBC_MEDIA_SELECTOR.format(VID=vid, VERSION=version))
@@ -106,7 +104,7 @@ async def _get_streams(vid: str, version="3.0") -> dict | None:
             return None
         return await response.json()
 
-async def _get_programme_stream(pid: str, format: str="dash") -> str | None:
+async def get_programme_stream(pid: str, format: str="dash") -> str | None:
     """Async function to get a programme stream URL by ID."""
     if f"{pid}-{format}" in _STREAMS:
         return _STREAMS[f"{pid}-{format}"]
@@ -133,7 +131,7 @@ async def _get_programme_stream(pid: str, format: str="dash") -> str | None:
         mediaselector_version = "3.0"
         streams = None
         while True:
-            streams = await _get_streams(vid, version=mediaselector_version)
+            streams = await get_streams(vid, version=mediaselector_version)
             if not streams:
                 _LOGGER.error("Failed to fetch streams for video ID: %s - %s", vid, mediaselector_version)
                 if mediaselector_version == "2.0":
@@ -164,15 +162,3 @@ async def _get_programme_stream(pid: str, format: str="dash") -> str | None:
         _STREAMS[f"{pid}-{format}"] = stream_url
         _STREAMS[f"{vid}-{format}"] = stream_url
         return stream_url
-
-def reload_categories():
-    """Reload categories from the BBC iPlayer."""
-    asyncio.run(_reload_categories())
-
-def reload_programmes():
-    """Reload programmes from the BBC iPlayer."""
-    asyncio.run(_reload_programmes())
-
-def get_programme_stream(pid: str) -> str | None:
-    """Get a programme stream URL by ID."""
-    return asyncio.run(_get_programme_stream(pid))
