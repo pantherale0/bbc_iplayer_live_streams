@@ -152,6 +152,8 @@ def parse_episode_view(redux: dict, programme: dict) -> None:
             continue
         if episode["episode"]["subtitle"] is not None:
             title = episode["episode"]["subtitle"]["default"]
+        elif episode["episode"]["subtitle"] is None:
+            title = episode["episode"]["title"]["default"]
         elif episode["episode"]["subtitle"]["slice"] is None:
             title = episode["episode"]["title"]["default"]
         else:
