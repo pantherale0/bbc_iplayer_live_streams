@@ -11,7 +11,8 @@
             "module": "uvicorn",
             "args": [
                 "app.asgi:application",
-                "--reload"
+                "--reload",
+                "--log-level=debug"
             ],
             "jinja": true
         }

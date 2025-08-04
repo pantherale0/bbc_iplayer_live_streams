@@ -1,3 +1,5 @@
+
+import os
 from config import Config
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI
@@ -14,6 +16,9 @@ from slowapi.util import get_remote_address
 scheduler: BaseScheduler
 site: AdminSite
 limiter: Limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
+app_path = __file__.rsplit("/", 1)[0]
+data_path = f"{app_path}/data"
+
 
 class FastAPIApp(FastAPI):
     """Custom FastAPI application."""
