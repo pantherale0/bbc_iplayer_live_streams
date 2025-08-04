@@ -237,7 +237,10 @@ async def get_programme_stream(pid: str, eid: str, format: str="dash") -> str | 
         if len(redux["versions"]) == 0:
             _LOGGER.error("No versions available for programme: %s", eid)
             return None
-        vid = redux["versions"][0]["id"]
+        if redux["versions"][0]["kind"] == "simulcast":
+            vid = redux["versions"][0]["serviceId"]
+        else:
+            vid = redux["versions"][0]["id"]
         if f"{vid}-{format}" in _STREAMS:
             return _STREAMS[f"{vid}-{format}"]
         mediaselector_version = "3.0"
