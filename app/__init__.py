@@ -62,8 +62,9 @@ def create_fastapi(config_class=Config):
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
     from app.bbc import bp as bbc_bp
-    from app.bbc.admin import BBCAdmin
+    from app.bbc.admin import BBCAdmin, ReDocsAdmin
     BBCAdmin.bind(app.site)
+    ReDocsAdmin.bind(app.site)
     app.include_router(bbc_bp)
     app.site.mount_app(app)
 

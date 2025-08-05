@@ -146,7 +146,7 @@ async def get_m3u(request: Request, format: str) -> Response:
         for episode in programme["episodes"]:
             if not episode["live"]:
                 continue
-            m3u_content += f"#EXTINF:-1 tvg-id=\"{episode['id']}\" tvg-name=\"{episode['title']}\" tvg-logo=\"http://{host}/bbc/programmes/{programme['id']}/poster\", {episode['title']}\n"
+            m3u_content += f"#EXTINF:-1 tvg-id=\"{episode['id']}\" tvg-name=\"{programme["title"]}: {episode['title']}\" tvg-logo=\"http://{host}/bbc/programmes/{programme['id']}/poster\", {programme["title"]}: {episode['title']}\n"
             # use this web service to forward to the stream via the programme ID
             m3u_content += f"http://{host}/bbc/programmes/{programme['id']}/stream/{episode['id']}/{format}\n"
 
