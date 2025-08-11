@@ -99,6 +99,7 @@ async def reload_programmes():
         async with aiofiles.open(f"{data_path}/programmes.json", "r") as f:
             _PROGRAMMES = json.loads(await f.read())
         return
+    _PROGRAMMES = []
     async with aiohttp.ClientSession() as session:
         sem = asyncio.Semaphore(15)
         coros = [
@@ -120,9 +121,6 @@ async def reload_programmes():
             for entity in redux_script["entities"].get("elements", []):
                 if "live" not in entity:
                     _LOGGER.warning("Entity missing 'live' key: %s", entity["episode"].get("id", "Unknown ID"))
-                    continue
-                # Check if ID is already in _PROGRAMMES
-                if next((p for p in _PROGRAMMES if p["id"] == entity["id"]), None):
                     continue
                 programme = {
                     "id": entity["id"],
